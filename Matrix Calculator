@@ -1,0 +1,267 @@
+#include<iostream>
+using namespace std;
+
+class matrix {
+	int rows;
+	int cols;
+	int** a;
+	friend istream& operator >> (istream& in, const matrix& m);
+	friend ostream& operator << (ostream& out, const matrix& m);
+public:
+	matrix() {
+		rows = 3;
+		cols = 3;
+		a = new int* [rows];
+		for (int i = 0; i < cols; i++) {
+			a[i] = new int[cols];
+		}
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				a[i][j] = 0;
+			}
+		}
+	}
+	matrix(int r, int c): rows(r), cols(c) {
+		a = new int* [r];
+		for (int i = 0; i < c; i++) {
+			*(a+i) = new int[c];
+		}
+		for (int i = 0; i < r; i++) {
+			for (int j = 0; j < c; j++) {
+				a[i][j] = 0;
+			}
+		}
+	}
+	matrix(const matrix& other) {
+		rows = other.rows;
+		cols = other.cols;
+		a = new int* [rows];
+		for (int i = 0; i < rows; i++) {
+			a[i] = new int[cols];
+			for (int j = 0; j < cols; j++) {
+				a[i][j] = other.a[i][j];
+			}
+		}
+	}
+	matrix& operator=(const matrix& other) {
+		if (this != &other) {
+			for (int i = 0; i < rows; i++) {
+				delete[] a[i];
+			}
+			delete[] a;
+			rows = other.rows;
+			cols = other.cols;
+			a = new int* [rows];
+			for (int i = 0; i < rows; i++) {
+				a[i] = new int[cols];
+				for (int j = 0; j < cols; j++) {
+					a[i][j] = other.a[i][j];
+				}
+			}
+		}
+		return *this;
+	}
+	matrix operator + (matrix& m) {
+		matrix temp(rows, cols);
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				temp.a[i][j] = a[i][j] + m.a[i][j];
+			}
+		}
+		return temp;
+	}
+	matrix operator - (matrix& m) {
+		matrix temp(rows, cols);
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				temp.a[i][j] = a[i][j] - m.a[i][j];
+			}
+		}
+		return temp;
+	}
+	matrix operator * (matrix& m) {
+		matrix temp(rows, cols);
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				temp.a[i][j] = 0;
+				for (int k = 0; k < 3; k++) {
+					temp.a[i][j] += a[i][k] * m.a[k][j];
+				}
+			}
+		}
+		return temp;
+	}
+	matrix operator ++ () {
+		matrix temp;
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				temp.a[i][j] = ++a[i][j];
+			}
+		}
+		return temp;
+	}
+	matrix operator ++ (int) {
+		matrix temp(rows, cols);
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				temp.a[i][j] = a[i][j] ++;
+			}
+		}
+		return temp;
+	}
+	matrix operator -- () {
+		matrix temp;
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				temp.a[i][j] = --a[i][j];
+			}
+		}
+		return temp;
+	}
+	matrix operator -- (int) {
+		matrix temp(rows, cols);
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				temp.a[i][j] = a[i][j]--;
+			}
+		}
+		return temp;
+	}
+	int* operator [] (int i) {
+		return a[i];
+	}
+	~matrix() {
+		for (int i = 0; i < rows; i++) {
+			delete[] a[i];
+		}
+		delete[] a;
+	}
+};
+istream& operator >> (istream& in, const matrix& m) {
+	for (int i = 0; i < m.rows; i++) {
+		for (int j = 0; j < m.cols; j++) {
+			cout << "Enter the elements of matrix : ";
+			in >> m.a[i][j];
+		}
+	}
+	return in;
+}
+ostream& operator << (ostream& out, const matrix& m) {
+	out << "Matrix : " << endl;
+	for (int i = 0; i < m.rows; i++) {
+		for (int j = 0; j < m.cols; j++) {
+			out << m.a[i][j] << " ";
+		}
+		out << endl;
+	}
+	return out;
+}
+int main() {
+	int choice = 0;
+	while (choice != 5) {
+		cout << "Enter one of the following : " << endl;
+		cout << "1. ADD " << endl;
+		cout << "2. SUBTRACT " << endl;
+		cout << "3. MULTIPLY " << endl;
+		cout << "4. NEGATE THE VALUES " << endl;
+		cout << "5. EXIT " << endl;
+		cin >> choice;
+		system("cls");
+		int r1, r2, c1, c2;
+		cout << "Enter the rows for matrix 1 : ";
+		cin >> r1;
+		cout << "Enter the coloumns for matrix 1 : ";
+		cin >> c1;
+		cout << "For matrix 1 :" << endl;
+		matrix m1(r1, c1);
+		cin >> m1;
+		for (int i = 0; i < r1; i++) {
+			for (int j = 0; j < c1; j++) {
+				cout << m1[i][j] << " ";
+			}
+			cout << endl;
+		}
+		system("pause");
+		system("cls");
+		cout << "Enter the rows for matrix 2 : ";
+		cin >> r2;
+		cout << "Enter the coloumns for matrix 2 : ";
+		cin >> c2;
+		cout << "For matrix 2 :" << endl;
+		matrix m2(r2, c2);
+		cin >> m2;
+		for (int i = 0; i < r2; i++) {
+			for (int j = 0; j < c2; j++) {
+				cout << m2[i][j] << " ";
+			}
+			cout << endl;
+		}
+		system("pause");
+		system("cls");
+		if (choice == 1) {
+			if (r1 == r2 && c1 == c2) {
+				matrix m3(r1, c1);
+				m3 = m1 + m2;
+				cout << "Addition of matrix : " << endl;
+				for (int i = 0; i < r1; i++) {
+					for (int j = 0; j < c1; j++) {
+						cout << m3[i][j];
+					}
+					cout << endl;
+				}
+			}
+			system("pause");
+		}
+		if (choice == 2) {
+			if (r1 == r2 && c1 == c2) {
+				matrix m3(r1, c1);
+				m3 = m1 - m2;
+				cout << "Difference of matrix : " << endl;
+				for (int i = 0; i < r1; i++) {
+					for (int j = 0; j < c1; j++) {
+						cout << m3[i][j];
+					}
+					cout << endl;
+				}
+			}
+			system("pause");
+		}
+		if (choice == 3) {
+			if (c1 == r2) {
+				matrix m3(r1, c2);
+				m3 = m1 * m2;
+				cout << "Product of matrix : " << endl;
+				for (int i = 0; i < r1; i++) {
+					for (int j = 0; j < c1; j++) {
+						cout << m3[i][j];
+					}
+					cout << endl;
+				}
+			}
+			system("pause");
+		}
+		if (choice == 4) {
+			matrix m3(r1, r2);
+			m1 = m3 - m1;
+			cout << "Negation of matrix 1 : " << endl;
+			for (int i = 0; i < r1; i++) {
+				for (int j = 0; j < c1; j++) {
+					cout << m1[i][j];
+				}
+		    	cout << endl;
+			}
+			m2 = m3 - m2;
+			cout << "Negation of matrix 2 : " << endl;
+			for (int i = 0; i < r1; i++) {
+				for (int j = 0; j < c1; j++) {
+					cout << m2[i][j];
+				}
+				cout << endl;
+			}
+			system("pause");
+		}
+		system("cls");
+		system("pause");
+	}
+	return 0;
+}
